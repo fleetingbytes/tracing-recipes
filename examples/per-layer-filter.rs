@@ -10,11 +10,11 @@ use tracing_appender::non_blocking;
 use tracing_recipes::add;
 use tracing_subscriber::{filter::EnvFilter, fmt, fmt::format::FmtSpan, prelude::*};
 
-const NUMBER_OF_WORKERS_FOR_NON_BLOCKING_WRITERS: usize = 2;
+const NUMBER_OF_GUARDS_FOR_NON_BLOCKING_WRITERS: usize = 2;
 
 // using SmallVec<[impl Drop; _]> is using _ and that is not stable yet; But soon!
 // https://github.com/rust-lang/issues/85077
-fn init_tracing() -> Result<SmallVec<[impl Drop; NUMBER_OF_WORKERS_FOR_NON_BLOCKING_WRITERS]>, Error>
+fn init_tracing() -> Result<SmallVec<[impl Drop; NUMBER_OF_GUARDS_FOR_NON_BLOCKING_WRITERS]>, Error>
 {
     let (non_blocking_stderr, stderr_guard) = non_blocking(std::io::stderr());
     let stderr_log = fmt::layer()
