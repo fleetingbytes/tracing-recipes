@@ -342,7 +342,6 @@ dependencies = [
 name = "tracing-recipes"
 version = "0.1.0"
 dependencies = [
- "smallvec",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",

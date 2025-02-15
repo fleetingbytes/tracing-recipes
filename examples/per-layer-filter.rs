@@ -3,19 +3,13 @@
 //! variable TRACE_RECIPES_LOG_LEVEL.
 //! Based on https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/targets/struct.Targets.html#examples
 
-use smallvec::{smallvec, SmallVec};
 use std::{fs::File, io::Error};
 use tracing::{debug, error, info, trace, warn};
 use tracing_appender::non_blocking;
 use tracing_recipes::add;
 use tracing_subscriber::{filter::EnvFilter, fmt, fmt::format::FmtSpan, prelude::*};
 
-const NUMBER_OF_GUARDS_FOR_NON_BLOCKING_WRITERS: usize = 2;
-
-// using SmallVec<[impl Drop; _]> is using _ and that is not stable yet; But soon!
-// https://github.com/rust-lang/issues/85077
-fn init_tracing() -> Result<SmallVec<[impl Drop; NUMBER_OF_GUARDS_FOR_NON_BLOCKING_WRITERS]>, Error>
-{
+fn init_tracing() -> Result<Vec<impl Drop>, Error> {
     let (non_blocking_stderr, stderr_guard) = non_blocking(std::io::stderr());
     let stderr_log = fmt::layer()
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
@@ -34,7 +28,7 @@ fn init_tracing() -> Result<SmallVec<[impl Drop; NUMBER_OF_GUARDS_FOR_NON_BLOCKI
         .with(file_log)
         .init();
 
-    Ok(smallvec![stderr_guard, file_guard])
+    Ok(vec![stderr_guard, file_guard])
 }
 
 fn main() -> Result<(), Error> {
